@@ -4,44 +4,57 @@ public class Main {
 
 
     public static void main(String[] args) {
+
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Enter the secret code's length:");
-        int length = scanner.nextInt();
+        int length = 0;
+        int numSymbols = 0;
 
-        System.out.println("Enter the number of possible symbols in the code:");
-        int numSymbols = scanner.nextInt();
+        while (true) {
+            try {
+                System.out.println("Enter the secret code's length:");
+                length = Integer.parseInt(scanner.next());
+                System.out.println("Enter the number of possible symbols in the code:");
+                numSymbols = Integer.parseInt(scanner.next());
 
-        if (length > numSymbols) {
-            System.out.println("Error: it's impossible to generate a code with a length of " + length +
-                    " with only " + numSymbols + " unique symbols.");
-        } else if (numSymbols > 36) {
-            System.out.println("Error: the number of possible symbols cannot be greater than 36.");
-        } else {
-            String secretCode = generateSecretCode(length, numSymbols);
-            String symbolRange = getSymbolRange(numSymbols);
-
-            // Output the secret code preparation details (using '*' to hide the actual code)
-            System.out.println("The secret is prepared: " + "*".repeat(length) + " (" + symbolRange + ").");
-            System.out.println("Okay, let's start a game!");
-            int turn = 1;
-            while (true) {
-                System.out.println("Turn " + turn + ":");
-                String guess = scanner.next();
-                if (guess.length() != length) {
-                    System.out.println("Invalid input length, please guess a code of length " + length + ".");
-                    continue;
-                }
-                String grade = gradeInput(guess, secretCode);
-                System.out.println(grade);
-                if (grade.contains("bull") && grade.split(" ")[0].equals(String.valueOf(length))) {
-                    System.out.println("Congratulations! You guessed the secret code.");
+                if (length > numSymbols) {
+                    System.out.println("Error: it's impossible to generate a code with a length of " + length +
+                            " with only " + numSymbols + " unique symbols.");
+                } else if (numSymbols > 36) {
+                    System.out.println("Error: the number of possible symbols cannot be greater than 36.");
+                } else {
                     break;
                 }
-                turn++;
+            } catch (NumberFormatException e) {
+                System.out.println("Error: please enter valid integers for the length and number of symbols.");
             }
         }
+
+        String secretCode = generateSecretCode(length, numSymbols);
+        String symbolRange = getSymbolRange(numSymbols);
+
+        System.out.println("The secret is prepared: " + "*".repeat(length) + " (" + symbolRange + ").");
+        System.out.println("Okay, let's start a game!");
+
+        int turn = 1;
+        while (true) {
+            System.out.println("Turn " + turn + ":");
+            String guess = scanner.next();
+
+            if (guess.length() != length) {
+                System.out.println("Invalid input length, please guess a code of length " + length + ".");
+                continue;
+            }
+            String grade = gradeInput(guess, secretCode);
+            System.out.println(grade);
+            if (grade.contains("bull") && grade.split(" ")[0].equals(String.valueOf(length))) {
+                System.out.println("Congratulations! You guessed the secret code.");
+                break;
+            }
+            turn++;
+        }
     }
+
 
     public static String generateSecretCode(int length, int numSymbols) {
         String symbols = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -112,7 +125,7 @@ public class Main {
         }
 
         if (cows == 1) {
-            if (bulls > 0) {
+            if (bulls >= 0) {
                 result.append(" and ");
             }
             result.append(cows).append(" cow");
@@ -126,5 +139,17 @@ public class Main {
         return result.toString();
 
 
+    }
+
+    public static boolean isValidPositiveInteger(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        for (int i = 0; i < str.length(); i++) {
+            if (!Character.isDigit(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }
